@@ -4,7 +4,9 @@ import React from "react";
 import ThemeProvider from "../context/Theme";
 
 import "./globals.css";
-import Navbar from "@/components/ui/navigation/navbar";
+import { Toaster } from "@/components/ui/sonner";
+import { SessionProvider } from "next-auth/react";
+import { auth } from "@/auth";
 
 const inter = localFont({
   src: "./fonts/InterVF.ttf",
@@ -26,21 +28,31 @@ export const metadata: Metadata = {
     icon: "/images/site-logo.svg",
   },
 };
-export default function RootLayout({
+const RootLayout= async({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>) {
+}>) =>{
+  const session = await auth();
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${inter.className} ${spaceGrotesk.variable} antialiased`}
-      >
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <Navbar />
-        {children}
-        </ThemeProvider>
-      </body>
+      <SessionProvider session={session}>
+        <body
+          className={`${inter.className} ${spaceGrotesk.variable} antialiased`}
+        >
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
+          <Toaster position="top-center" />
+        </body>
+      </SessionProvider>
     </html>
   );
 }
+
+export default RootLayout;
