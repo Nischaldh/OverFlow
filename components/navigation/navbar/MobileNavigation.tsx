@@ -13,8 +13,11 @@ import Link from "next/link";
 import ROUTES from "@/constants/routes";
 import { Button } from "@/components/ui/button";
 import NavLinks from "./NavLinks";
+import { auth } from "@/auth";
+import { cn } from "@/lib/utils";
 
-const MobileNavigation = () => {
+const MobileNavigation = async () => {
+  const session = await auth();
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -48,7 +51,8 @@ const MobileNavigation = () => {
                 <NavLinks isMobileNav/>
             </section>
           </SheetClose>
-          <div className="flex flex-col gap-3">
+          <div className={cn("flex flex-col gap-3", session && "hidden")}>
+
             <SheetClose asChild>
               <Link href={ROUTES.SIGN_IN}>
                 <Button className="small-medium btn-secondary min-h-[41px] w-full rounded-lg px-4 py-3 shadow-none">
