@@ -42,7 +42,7 @@ const MobileNavigation = async () => {
             width={23}
           />
           <p className="h2-bold font-space-grotesk text-dark-100 dark:text-light-900">
-            Dev<span className="text-primary-500">Flow</span>
+            Over<span className="text-primary-500">Flow</span>
           </p>
         </Link>
         <div className="no-scrollbar flex h-[calc(100vh-80px)] flex-col justify-between overflow-y-auto">
