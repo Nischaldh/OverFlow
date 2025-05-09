@@ -1,5 +1,4 @@
 import { Schema, models, model, Types } from "mongoose";
-import User from "./user.model";
 
 export interface IAccount{
     userID:Types.ObjectId,
