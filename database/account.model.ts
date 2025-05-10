@@ -1,4 +1,4 @@
-import { Schema, models, model, Types } from "mongoose";
+import { Schema, models, model, Types, Document } from "mongoose";
 
 export interface IAccount{
     userID:Types.ObjectId,
@@ -8,6 +8,8 @@ export interface IAccount{
     provider:string;
     providerAccountId: string;
 }
+
+export interface IAccountDoc extends IAccount, Document{}
 
 const AccountSchema = new Schema<IAccount>({
     userID:{type:Schema.Types.ObjectId, ref:"User", required: true},
