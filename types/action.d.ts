@@ -6,5 +6,11 @@ interface SignInWithOAuthParams{
         name: string,
         image:string,
         username: string,
-    }
+    };
+}
+interface AuthCredentials{
+    name:string;
+    username:string;
+    email:string;
+    password:string;
 }
