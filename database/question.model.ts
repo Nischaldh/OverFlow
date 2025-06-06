@@ -14,13 +14,13 @@ export interface IQuestionDoc extends IQuestion, Document {}
 
 const QuestionSchema = new Schema<IQuestion>(
   {
-    title: { String, required: true },
-    content: { String, required: true },
+    title: { type: String, required: true },
+    content: { type: String, required: true },
     tags: [{ type: Schema.Types.ObjectId, ref: "Tag", required: true }],
-    views: { Number, default: 0 },
-    answers: { Number, default: 0 },
-    upvotes: { Number, default: 0 },
-    downvotes: { Number, default: 0 },
+    views: { type: Number, default: 0 },
+    answers: { type: Number, default: 0 },
+    upvotes: { type: Number, default: 0 },
+    downvotes: { type: Number, default: 0 },
     author: { type: Schema.Types.ObjectId, ref: "User", required: true },
   },
   { timestamps: true }
