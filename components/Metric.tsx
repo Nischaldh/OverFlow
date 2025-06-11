@@ -32,7 +32,7 @@ const Metric = ({
         alt={alt}
         className={`rounded-full object-content ${imgStyles}`}
       />
-      <p className={`${textStyles} flex items-center gap-1`}>{value}
+      <p className={`${textStyles} flex items-center gap-1`}>{value} • 
         <span className={`small-regular line-clamp-1 ${isAuthor?"max-sm:hidden":""}`}>{title}</span>
       </p>
     </>
