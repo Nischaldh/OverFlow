@@ -9,7 +9,6 @@ export const techMap: { [key: string]: string } = {
     "bootstrap": "devicon-bootstrap-plain",
     "c": "devicon-c-plain",
     "cplusplus": "devicon-cplusplus-plain",
-    "c++": "devicon-cplusplus-plain",
     "c#": "devicon-csharp-plain",
     "csharp": "devicon-csharp-plain",
     "chrome": "devicon-chrome-plain",
