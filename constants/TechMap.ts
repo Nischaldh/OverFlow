@@ -54,7 +54,7 @@ export const techMap: { [key: string]: string } = {
     "mongodb": "devicon-mongodb-plain",
     "mysql": "devicon-mysql-plain",
     "nginx": "devicon-nginx-original",
-    "nextjs": "devicon-nextjs-original",
+    "nextjs": "devicon-nextjs-plain",
     "nodejs": "devicon-nodejs-plain",
     "npm": "devicon-npm-original-wordmark",
     "nuxtjs": "devicon-nuxtjs-plain",
