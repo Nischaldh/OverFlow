@@ -3,15 +3,20 @@ import Preview from "@/components/editor/Preview";
 import Metric from "@/components/Metric";
 import UserAvatar from "@/components/UserAvatar";
 import ROUTES from "@/constants/routes";
-import { getQuestion } from "@/lib/actions/question.action";
+import { getQuestion, increamentViews } from "@/lib/actions/question.action";
 import { formatNumber, getTimeStamp } from "@/lib/utils";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import React from "react";
+import { after } from "next/server";
 
 const QuestionDetails = async ({ params }: RouteParams) => {
   const { id } = await params;
   const { success, data: question } = await getQuestion({ questionId: id });
+  after(async () => {
+    await increamentViews({ questionId: id });
+  });
+
   if (!success || !question) {
     return redirect("/404");
   }
@@ -24,6 +29,7 @@ const QuestionDetails = async ({ params }: RouteParams) => {
             <UserAvatar
               id={author._id}
               name={author.name}
+              imageUrl={author.image}
               className="size-[22]"
               fallbackClassName="text-[10px]"
             />
@@ -41,7 +47,7 @@ const QuestionDetails = async ({ params }: RouteParams) => {
           {title}
         </h2>
       </div>
-      <div className="mb-8 bt-5 flex flex-wrap gap-4 mt-2">
+      <div className="mb-8 bt-5 flex flex-wrap gap-4 mt-3.5">
         <Metric
           imgUrl="/icons/clock.svg"
           alt="Clock Icon"

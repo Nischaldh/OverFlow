@@ -7,12 +7,15 @@ import {
   AskQuestionSchema,
   EditQuestionSchema,
   GetQuestionSchema,
+  IncrementViewsSchema,
   PaginatedSearchParamsSchema,
 } from "../validations";
 import mongoose, { FilterQuery } from "mongoose";
 import Tag, { ITagDoc } from "@/database/tag.model";
 import TagQuestion, { ITagQuestion } from "@/database/tag-question.model";
 import { NotFoundError, UnauthorizedError } from "../http-errors";
+import { revalidatePath } from "next/cache";
+import ROUTES from "@/constants/routes";
 
 export async function createQuestion(
   params: CreateQuestionParams
@@ -288,6 +291,34 @@ export async function getQuestions(
       success: true,
       data: { questions: JSON.parse(JSON.stringify(questions)), isNext },
     };
+  } catch (error) {
+    return { ...(handleError(error) as ErrorResponse), data: undefined };
+  }
+}
+
+export async function increamentViews(
+  params: IncrementViewsParams
+): Promise<ActionResponse<{ views: number }>> {
+  const validationResult = await action({
+    params,
+    schema: IncrementViewsSchema,
+  });
+  if (validationResult instanceof Error) {
+    return {
+      ...(handleError(validationResult) as ErrorResponse),
+      data: undefined,
+    };
+  }
+  const { questionId } = validationResult.params!;
+  try {
+    const question = await Question.findById(questionId);
+    if (!question) {
+      throw new NotFoundError("Question not found");
+    }
+    question.views += 1;
+    await question.save();
+
+    return { success: true, data: { views: question.views } };
   } catch (error) {
     return { ...(handleError(error) as ErrorResponse), data: undefined };
   }
