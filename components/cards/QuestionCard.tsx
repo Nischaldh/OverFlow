@@ -28,7 +28,7 @@ const QuestionCard = ({
         </div>
       </div>
       <div className="mt-3.5 flex w-full flex-wrap gap-2">
-        {tags.map((tag:Tag) => (
+        {tags.map((tag: Tag) => (
           <TagCard key={tag._id} _id={tag._id} name={tag.name} compact />
         ))}
       </div>
@@ -36,31 +36,32 @@ const QuestionCard = ({
         <Metric
           imgUrl={author.image}
           alt={author.name}
-          value={author.name}
+          value={`${author.name}`}
           title={`asked ${getTimeStamp(createdAt)}`}
           href={ROUTES.PROFILE(author._id)}
           textStyles="body-medium text-dark400_light700"
           isAuthor
+          titleStyles="max-sm:hidden"
         />
         <div className="flex items-center gap-3 max-sm:flex-wrap max-sm:justify-start">
           <Metric
             imgUrl="/icons/like.svg"
             alt="like"
-            value={upvotes}
+            value={`${upvotes} •`}
             title=" votes"
             textStyles="small-medium text-dark400_light800"
           />
           <Metric
             imgUrl="/icons/message.svg"
             alt="answers"
-            value={answers}
+            value={`${answers} •`}
             title=" Answers"
             textStyles="small-medium text-dark400_light800"
           />
           <Metric
             imgUrl="/icons/eye.svg"
             alt="views"
-            value={views}
+            value={`${views} •`}
             title=" Views"
             textStyles="small-medium text-dark400_light800"
           />
