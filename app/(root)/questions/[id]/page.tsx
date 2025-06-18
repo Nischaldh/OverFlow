@@ -11,6 +11,7 @@ import React from "react";
 import { after } from "next/server";
 import AnswerForm from "@/components/forms/AnswerForm";
 import { getAnswers } from "@/lib/actions/answer.action";
+import AllAnswers from "@/components/answers/AllAnswers";
 
 const QuestionDetails = async ({ params }: RouteParams) => {
   const { id } = await params;
@@ -94,6 +95,14 @@ const QuestionDetails = async ({ params }: RouteParams) => {
           />
         ))}
       </div>
+      <section className="my-5">
+        <AllAnswers 
+          data={answersResult?.answers}
+          success={answersSuccess}
+          error={answersError}
+          totalAnswers={answersResult?.totalAnswer || 0}
+        />
+      </section>
       <section className="my-5">
         <AnswerForm questionId={question._id} />
       </section>
