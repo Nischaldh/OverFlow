@@ -25,7 +25,6 @@ import { useRouter } from "next/navigation";
 import ROUTES from "@/constants/routes";
 
 const Editor = dynamic(() => import("../editor/index"), {
-  // Make sure we turn SSR off
   ssr: false,
 });
 
@@ -100,7 +99,7 @@ const QuestionForm = ({ question, isEdit = false }: Params) => {
         if (result.success) {
           toast.success("Question updated successfully");
 
-          if (result.data) router.push(ROUTES.QUESTIONS(result.data._id));
+          if (result.data) router.push(ROUTES.QUESTIONS((result.data as { _id: string })._id));
         } else {
           toast.error(result.error?.message || "Something went wrong");
         }
