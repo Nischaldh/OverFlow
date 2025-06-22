@@ -20,25 +20,6 @@ const InitializedEditor = dynamic(() => import("./InitializedMDXEditor"), {
 
 const Editor = forwardRef<MDXEditorMethods, Props>(
   ({ value, fieldChange, ...props }, ref) => {
-useEffect(() => {
-  const style = document.createElement("style");
-  style.innerHTML = `
-    .mdxeditor__dropdown-menu,
-    .mdxeditor__codeblock-language-dropdown {
-      max-height: 250px !important;
-      overflow-y: auto !important;
-      overscroll-behavior: contain !important;
-    }
-    body > .mdxeditor__portal {
-      overflow: visible !important;
-    }
-  `;
-  document.head.appendChild(style);
-  return () => {
-    document.head.removeChild(style);
-  };
-}, []);
-
     return (
       <InitializedEditor
         {...props}

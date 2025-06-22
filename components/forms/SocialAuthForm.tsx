@@ -34,7 +34,7 @@ const SocialAuthForm = () => {
           width={20}
           className="invert-colors mr-2.5 object-contain"
         />
-        <span>Login In With GitHub</span>
+        <span>Login With GitHub</span>
       </Button>
       <Button className={buttonClass} onClick={() => handleSignIn("google")}>
         <Image
@@ -44,7 +44,7 @@ const SocialAuthForm = () => {
           width={20}
           className="mr-2.5 object-contain"
         />
-        <span>Login In With Google</span>
+        <span>Login With Google</span>
       </Button>
     </div>
   );

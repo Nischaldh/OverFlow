@@ -19,7 +19,6 @@ const EditQuestion = async ({ params }: RouteParams) => {
 
   return (
     <main>
-
         <QuestionForm question={question} isEdit/>
     </main>
   );

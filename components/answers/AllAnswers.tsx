@@ -22,10 +22,10 @@ const AllAnswers = ({ data, success, error, totalAnswers }: Props) => {
         empty={EMPTY_ANSWERS}
         render={(answers) =>
           answers.map((answer) => (
-            <p key={answer._id}>
+            <span key={answer._id}>
               {" "}
               <AnswerCard key={answer._id} {...answer} />
-            </p>
+            </span>
           ))
         }
       />
