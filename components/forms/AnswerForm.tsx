@@ -1,9 +1,16 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { MDXEditorMethods } from "@mdxeditor/editor";
+import { Loader2 } from "lucide-react";
+import Image from "next/image";
+import { useSession } from "next-auth/react";
+import React, { useTransition } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
+import Editor from "@/components/editor";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -12,75 +19,125 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-
-import { AnswerSchema } from "@/lib/validations";
-import { useRef, useState, useTransition } from "react";
-
-import dynamic from "next/dynamic";
-import { MDXEditorMethods } from "@mdxeditor/editor";
-import { ReloadIcon } from "@radix-ui/react-icons";
-import Image from "next/image";
 import { createAnswer } from "@/lib/actions/answer.action";
-import { toast } from "sonner";
-import { start } from "repl";
+import { api } from "@/lib/api";
+import { AnswerSchema } from "@/lib/validations";
 
-const Editor = dynamic(() => import("../editor/index"), {
-  ssr: false,
-});
+interface Props {
+  questionId: string;
+  questionTitle: string;
+  questionContent: string;
+}
 
-const AnswerForm = ({ questionId }: { questionId: string }) => {
+const AnswerForm = ({ questionId, questionTitle, questionContent }: Props) => {
   const [isAnswering, startAnsweringTransition] = useTransition();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isAISubmitting, setIsAISubmitting] = useState(false);
-
-  const editorRef = useRef<MDXEditorMethods>(null);
+  const [isAISubmitting, setIsAISubmitting] = React.useState(false);
+  const session = useSession();
+  const editorRef = React.useRef<MDXEditorMethods>(null);
 
   const form = useForm<z.infer<typeof AnswerSchema>>({
     resolver: zodResolver(AnswerSchema),
     defaultValues: {
-      content: " ",
+      content: "",
     },
   });
+
   const handleSubmit = async (values: z.infer<typeof AnswerSchema>) => {
     startAnsweringTransition(async () => {
       const result = await createAnswer({
-        content: values.content,
         questionId,
+        content: values.content,
       });
+
       if (result.success) {
         form.reset();
-        toast.success("Answer posted successfully!");
+
+        toast.success("Success", {
+          description: "Your answer has been created successfully",
+        });
+
+        if (editorRef.current) {
+          editorRef.current.setMarkdown("");
+        }
       } else {
-        toast.error(result.error?.message || "Failed to post answer");
+        toast.error("Error", {
+          description: result.error?.message || "Something went wrong",
+        });
       }
     });
   };
 
+  const generateAIAnswer = async () => {
+    if (session.status !== "authenticated") {
+      return toast("Please login to use AI", {
+        description: "You need to be logged in to use AI",
+      });
+    }
+
+    setIsAISubmitting(true);
+    const userAnswer = editorRef.current?.getMarkdown();
+
+    try {
+      const { success, data, error } = await api.ai.getAnswer(
+        questionTitle,
+        questionContent,
+        userAnswer
+      );
+
+      if (!success) {
+        return toast.error("Error", {
+          description: error?.message || "Something went wrong",
+        });
+      }
+
+      const formattedAnswer = data.replace(/<br>/g, " ").toString().trim();
+
+      if (editorRef.current) {
+        editorRef.current.setMarkdown(formattedAnswer);
+
+        form.setValue("content", formattedAnswer);
+        form.trigger("content");
+      }
+
+      toast.success("Success", {
+        description: "Your answer has been generated successfully",
+      });
+    } catch (error) {
+      toast.error("Error", {
+        description:
+          error instanceof Error ? error.message : "Something went wrong",
+      });
+    } finally {
+      setIsAISubmitting(false);
+    }
+  };
+
   return (
     <div>
-      <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center sm:gap-2">
-        <h4 className="paragraph-semibold text-dark400_light800">
+      <div className="flex sm:flex-row flex-col justify-between sm:items-center gap-5 sm:gap-2">
+        <h4 className="text-dark-400_light-800 paragraph-semibold">
           Write your answer here
         </h4>
         <Button
-          className="btn light-border-2 gap-1.5 rounded-md border px-4 py-2.5 text-primary-500 shadow-none dark:text-primary-500"
+          onClick={generateAIAnswer}
+          className="gap-1.5 shadow-none px-4 py-2.5 border light-border-2 rounded-md text-primary-500 dark:text-primary cursor-pointer btn"
           disabled={isAISubmitting}
         >
           {isAISubmitting ? (
             <>
-              <ReloadIcon className="mr-2 size-4 animate-spin" />
-              Generating...
+              <Loader2 className="mr-2 size-4 animate-spin" />
+              Generating
             </>
           ) : (
             <>
               <Image
                 src="/icons/stars.svg"
-                alt="Generate AI Answer"
+                alt="Generate AI answer"
                 width={12}
                 height={12}
                 className="object-contain"
               />
-              Generate AI Answer
+              Generate AI answer
             </>
           )}
         </Button>
@@ -88,17 +145,17 @@ const AnswerForm = ({ questionId }: { questionId: string }) => {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(handleSubmit)}
-          className="mt-6 flex w-full flex-col gap-10"
+          className="flex flex-col gap-10 mt-6 w-full"
         >
           <FormField
             control={form.control}
             name="content"
             render={({ field }) => (
-              <FormItem className="flex w-full flex-col gap-3">
+              <FormItem className="flex flex-col gap-3 w-full">
                 <FormControl>
                   <Editor
+                    ref={editorRef}
                     value={field.value}
-                    editorRef={editorRef}
                     fieldChange={field.onChange}
                   />
                 </FormControl>
@@ -107,14 +164,17 @@ const AnswerForm = ({ questionId }: { questionId: string }) => {
             )}
           />
           <div className="flex justify-end">
-            <Button type="submit" className="primary-gradient w-fit">
+            <Button
+              type="submit"
+              className="w-fit !text-light-900 cursor-pointer primary-gradient"
+            >
               {isAnswering ? (
                 <>
-                  <ReloadIcon className="mr-2 size-4 animate-spin" />
-                  Posting...
+                  <Loader2 className="mr-2 size-4 animate-spin" />
+                  Submitting
                 </>
               ) : (
-                "Post Answer"
+                "Post answer"
               )}
             </Button>
           </div>

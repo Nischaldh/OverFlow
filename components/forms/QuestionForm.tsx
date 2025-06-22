@@ -23,10 +23,7 @@ import { createQuestion, editQuestion } from "@/lib/actions/question.action";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import ROUTES from "@/constants/routes";
-
-const Editor = dynamic(() => import("../editor/index"), {
-  ssr: false,
-});
+import Editor from "../editor";
 
 interface Params {
   question?: Question;
@@ -157,7 +154,7 @@ const QuestionForm = ({ question, isEdit = false }: Params) => {
               <FormControl>
                 <Editor
                   value={field.value}
-                  editorRef={editorRef}
+                  ref={editorRef}
                   fieldChange={field.onChange}
                 />
               </FormControl>

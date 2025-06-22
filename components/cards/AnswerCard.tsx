@@ -7,7 +7,7 @@ import Preview from "../editor/Preview";
 
 const AnswerCard = ({ _id, author, content, createdAt }: Answer) => {
   return (
-    <article className="light-border border-p py-10">
+    <div className="light-border border-p py-10" suppressHydrationWarning >
       <span id={JSON.stringify(_id)} className="hash-span"></span>
       <div className="mb-5 flex flex-col-reverse justify-between gap-5 sm:flex-row sm:items-center sm:gap-2">
         <div className="flex flex-1 items-start gap-1 sm:items-center">
@@ -21,7 +21,7 @@ const AnswerCard = ({ _id, author, content, createdAt }: Answer) => {
             href={ROUTES.PROFILE(author._id)}
             className="flex flex-col sm:flex-row sm:items-center max-sm:ml-1"
           >
-            <p className="body-semibold text-dark300_light700">
+            <p className="body-semibold text-dark300_light700" suppressHydrationWarning>
               {author.name ?? "Anonymous"}
             </p>
             <p className="small-regular text-light400_light500 ml-0.5 mt-0.5 line-clamp-1">
@@ -33,7 +33,7 @@ const AnswerCard = ({ _id, author, content, createdAt }: Answer) => {
         <div className="flex justify-end">Votes</div>
       </div>
       <Preview content={content} />
-    </article>
+    </div>
   );
 };
 

@@ -33,7 +33,7 @@ const QuestionDetails = async ({ params }: RouteParams) => {
     pageSize: 10,
     filter: "latest",
   });
-  console.log(answersResult)
+  console.log(answersResult);
   const { author, createdAt, answers, views, tags, content, title } = question;
   return (
     <>
@@ -96,7 +96,7 @@ const QuestionDetails = async ({ params }: RouteParams) => {
         ))}
       </div>
       <section className="my-5">
-        <AllAnswers 
+        <AllAnswers
           data={answersResult?.answers}
           success={answersSuccess}
           error={answersError}
@@ -104,7 +104,11 @@ const QuestionDetails = async ({ params }: RouteParams) => {
         />
       </section>
       <section className="my-5">
-        <AnswerForm questionId={question._id} />
+        <AnswerForm
+          questionId={question._id}
+          questionTitle={question.title}
+          questionContent={question.content}
+        />
       </section>
     </>
   );

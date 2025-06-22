@@ -464,3 +464,10 @@ code {
     @apply bg-background text-foreground;
   }
 }
+
+.mdxeditor__dropdown-menu,
+.mdxeditor__codeblock-language-dropdown {
+  max-height: 250px !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain !important;
+}

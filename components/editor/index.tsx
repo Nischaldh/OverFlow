@@ -1,153 +1,53 @@
 "use client";
 
 import {
-  headingsPlugin,
-  listsPlugin,
-  quotePlugin,
-  thematicBreakPlugin,
-  markdownShortcutPlugin,
   MDXEditor,
   type MDXEditorMethods,
-  ConditionalContents,
-  ChangeCodeMirrorLanguage,
-  toolbarPlugin,
-  UndoRedo,
-  Separator,
-  BoldItalicUnderlineToggles,
-  ListsToggle,
-  CreateLink,
-  InsertImage,
-  InsertTable,
-  InsertThematicBreak,
-  InsertCodeBlock,
-  linkPlugin,
-  linkDialogPlugin,
-  tablePlugin,
-  imagePlugin,
-  codeBlockPlugin,
-  codeMirrorPlugin,
-  diffSourcePlugin,
+  type MDXEditorProps,
 } from "@mdxeditor/editor";
-import { basicDark } from "cm6-theme-basic-dark";
-import { useTheme } from "next-themes";
-import type { ForwardedRef } from "react";
+import dynamic from "next/dynamic";
+import { forwardRef } from "react";
+import { useEffect } from "react";
 
-import "@mdxeditor/editor/style.css";
-import "./dark-editor.css";
-
-interface Props {
+interface Props extends Omit<MDXEditorProps, "markdown" | "onchange"> {
   value: string;
   fieldChange: (value: string) => void;
-  editorRef: ForwardedRef<MDXEditorMethods> | null;
 }
 
-const Editor = ({ value, editorRef, fieldChange, ...props }: Props) => {
-  const { resolvedTheme } = useTheme();
+const InitializedEditor = dynamic(() => import("./InitializedMDXEditor"), {
+  ssr: false,
+});
 
-  const theme = resolvedTheme === "dark" ? [basicDark] : [];
+const Editor = forwardRef<MDXEditorMethods, Props>(
+  ({ value, fieldChange, ...props }, ref) => {
+useEffect(() => {
+  const style = document.createElement("style");
+  style.innerHTML = `
+    .mdxeditor__dropdown-menu,
+    .mdxeditor__codeblock-language-dropdown {
+      max-height: 250px !important;
+      overflow-y: auto !important;
+      overscroll-behavior: contain !important;
+    }
+    body > .mdxeditor__portal {
+      overflow: visible !important;
+    }
+  `;
+  document.head.appendChild(style);
+  return () => {
+    document.head.removeChild(style);
+  };
+}, []);
 
-  return (
-    <MDXEditor
-      key={resolvedTheme}
-      markdown={value}
-      ref={editorRef}
-      className="background-light800_dark200 light-border-2 markdown-editor dark-editor w-full border rounded-2 grid"
-      onChange={fieldChange}
-      plugins={[
-        headingsPlugin(),
-        listsPlugin(),
-        linkPlugin(),
-        linkDialogPlugin(),
-        quotePlugin(),
-        thematicBreakPlugin(),
-        markdownShortcutPlugin(),
-        tablePlugin(),
-        imagePlugin(),
-        codeBlockPlugin({ defaultCodeBlockLanguage: "" }),
-        codeMirrorPlugin({
-          codeBlockLanguages: {
-            "": "Unspecified",
-            asm: "Assembly",
-            bash: "Bash",
-            c: "C",
-            cpp: "C++",
-            css: "CSS",
-            dart: "Dart",
-            dockerfile: "Dockerfile",
-            go: "Go",
-            graphql: "GraphQL",
-            html: "HTML",
-            ini: "INI",
-            java: "Java",
-            javascript: "JavaScript",
-            js: "JavaScript",
-            json: "JSON",
-            kotlin: "Kotlin",
-            makefile: "Makefile",
-            markdown: "Markdown",
-            perl: "Perl",
-            php: "PHP",
-            powershell: "PowerShell",
-            python: "Python",
-            r: "R",
-            ruby: "Ruby",
-            rust: "Rust",
-            saas: "Sass",
-            scala: "Scala",
-            scss: "SCSS",
-            shell: "Shell",
-            sql: "SQL",
-            swift: "Swift",
-            toml: "TOML",
-            ts: "TypeScript",
-            tsx: "TypeScript (React)",
-            txt: "Plain Text",
-            yaml: "YAML",
-            jsx: "JavaScript (React)",
-          },
-          autoLoadLanguageSupport: true,
-          codeMirrorExtensions: theme,
-        }),
-        diffSourcePlugin({ viewMode: "rich-text", diffMarkdown: "" }),
-        toolbarPlugin({
-          toolbarContents: () => (
-            <ConditionalContents
-              options={[
-                {
-                  when: (editor) => editor?.editorType === "codeblock",
-                  contents: () => <ChangeCodeMirrorLanguage />,
-                },
-                {
-                  fallback: () => (
-                    <>
-                      <UndoRedo />
-                      <Separator />
-
-                      <BoldItalicUnderlineToggles />
-                      <Separator />
-
-                      <ListsToggle />
-                      <Separator />
-
-                      <CreateLink />
-                      <InsertImage />
-                      <Separator />
-
-                      <InsertTable />
-                      <InsertThematicBreak />
-
-                      <InsertCodeBlock />
-                    </>
-                  ),
-                },
-              ]}
-            />
-          ),
-        }),
-      ]}
-      {...props}
-    />
-  );
-};
+    return (
+      <InitializedEditor
+        {...props}
+        markdown={value}
+        fieldChange={fieldChange}
+        editorRef={ref}
+      />
+    );
+  }
+);
 
 export default Editor;
