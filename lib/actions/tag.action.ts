@@ -31,7 +31,7 @@ export const getTags = async (
   let sortCriteria = {};
   switch (filter) {
     case "popular":
-      sortCriteria = { quesions: -1 };
+      sortCriteria = { questions: -1 };
       break;
     case "recent":
       sortCriteria = { createdAt: -1 };
@@ -43,13 +43,14 @@ export const getTags = async (
       sortCriteria = { name: 1 };
       break;
     default:
-      sortCriteria = { quesions: -1 };
+      sortCriteria = { questions: -1 };
       break;
   }
   try {
     const totalTags = await Tag.countDocuments(filterQuery);
     const tags = await Tag.find(filterQuery)
       .sort(sortCriteria)
+      .collation({ locale: "en", strength: 1 })
       .skip(skip)
       .limit(limit);
     const isNext = totalTags > skip + tags.length;
