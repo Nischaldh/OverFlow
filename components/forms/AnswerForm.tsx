@@ -43,6 +43,11 @@ const AnswerForm = ({ questionId, questionTitle, questionContent }: Props) => {
   });
 
   const handleSubmit = async (values: z.infer<typeof AnswerSchema>) => {
+    if (session.status !== "authenticated") {
+      return toast("Please login to Answer", {
+        description: "You need to be logged in to Answer a question",
+      });
+    }
     startAnsweringTransition(async () => {
       const result = await createAnswer({
         questionId,

@@ -14,14 +14,18 @@ import { getAnswers } from "@/lib/actions/answer.action";
 import AllAnswers from "@/components/answers/AllAnswers";
 import Votes from "@/components/votes/votes";
 import { hasVoted } from "@/lib/actions/vote.action";
+import { auth } from "@/auth";
 
-const QuestionDetails = async ({ params , searchParams}: RouteParams) => {
+const QuestionDetails = async ({ params, searchParams }: RouteParams) => {
+  const session = await auth();
   const { id } = await params;
-  const {page, pageSize, filter} = await searchParams;
+  const { page, pageSize, filter } = await searchParams;
   const { success, data: question } = await getQuestion({ questionId: id });
-  after(async () => {
-    await increamentViews({ questionId: id });
-  });
+  if (session) {
+    after(async () => {
+      await increamentViews({ questionId: id });
+    });
+  }
 
   if (!success || !question) {
     return redirect("/404");
@@ -32,8 +36,8 @@ const QuestionDetails = async ({ params , searchParams}: RouteParams) => {
     error: answersError,
   } = await getAnswers({
     questionId: id,
-    page: Number(page)||1,
-    pageSize: Number(pageSize)||10,
+    page: Number(page) || 1,
+    pageSize: Number(pageSize) || 10,
     filter,
   });
   const hasVotedPromise = hasVoted({
@@ -64,9 +68,9 @@ const QuestionDetails = async ({ params , searchParams}: RouteParams) => {
               <Votes
                 upvotes={question.upvotes}
                 downvotes={question.downvotes}
-                targetType = "question"
-                targetId = {question._id}
-                hasVotedPromise = {hasVotedPromise}
+                targetType="question"
+                targetId={question._id}
+                hasVotedPromise={hasVotedPromise}
               />
             </Suspense>
           </div>
