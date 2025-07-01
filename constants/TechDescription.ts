@@ -5,7 +5,7 @@ export const techDescriptionMap: { [key: string]: string } = {
     "TypeScript adds strong typing to JavaScript, making it great for scalable and maintainable applications.",
   react:
     "React is a popular library for building fast and modular user interfaces.",
-  nextjs:
+  next:
     "Next.js is a React framework for server-side rendering and building optimized web applications.",
   nodejs:
     "Node.js enables server-side JavaScript, allowing you to create fast, scalable network applications.",
