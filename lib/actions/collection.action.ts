@@ -138,7 +138,7 @@ export async function getSavedQuestions(
           as: "question",
         },
       },
-      { $unwind: "question" },
+      { $unwind: "$question" },
       {
         $lookup: {
           from: "users",
@@ -147,7 +147,7 @@ export async function getSavedQuestions(
           as: "question.author",
         },
       },
-      { $unwind: "question.author" },
+      { $unwind: "$question.author" },
       {
         $lookup: {
           from: "tags",
@@ -174,7 +174,8 @@ export async function getSavedQuestions(
     pipeline.push({ $sort: sortCriteria }, { $skip: skip }, { $limit: limit });
     pipeline.push({ $project: { question: 1, author: 1 } });
     const questions = await Collection.aggregate(pipeline);
-    const isNext = totalCount.count > skip + questions.length;
+    const total = totalCount?.count ?? 0;
+    const isNext = total > skip + questions.length;
     return {
       success: true,
       data: {
