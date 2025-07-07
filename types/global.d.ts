@@ -1,7 +1,7 @@
 interface Tag {
   _id: string;
   name: string;
-  questions?:number;
+  questions?: number;
 }
 interface Author {
   _id: string;
@@ -71,11 +71,17 @@ interface User {
   location?: string;
   portfolio?: string;
   reputation?: number;
-  createdAt:Date;
+  createdAt: Date;
 }
 
-interface Collection{
-  _id:string;
-  author:string|Author;
-  question:Question;
+interface Collection {
+  _id: string;
+  author: string | Author;
+  question: Question;
+}
+
+interface BadgeCounts {
+  GOLD: number;
+  SILVER: number;
+  BRONZE: number;
 }
