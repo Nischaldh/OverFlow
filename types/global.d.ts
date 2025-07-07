@@ -66,11 +66,12 @@ interface User {
   name: string;
   username: string;
   email: string;
-  boi?: string;
+  bio?: string;
   image?: string;
   location?: string;
   portfolio?: string;
   reputation?: number;
+  createdAt:Date;
 }
 
 interface Collection{
