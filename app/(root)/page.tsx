@@ -10,6 +10,7 @@ import { EMPTY_QUESTION } from "@/constants/states";
 import { getQuestions } from "@/lib/actions/question.action";
 import CommonFilter from "@/components/filters/CommonFilter";
 import { HomePageFilters } from "@/constants/filters";
+import Pagination from "@/components/Pagination";
 
 interface SearchParams {
   searchParams: Promise<{ [key: string]: string }>;
@@ -23,7 +24,7 @@ const Home = async ({ searchParams }: SearchParams) => {
     query: query || "",
     filter: filter || "",
   });
-  const { questions } = data || {};
+  const { questions, isNext } = data || {};
   return (
     <>
       <section className="w-full flex flex-col-reverse sm:flex-row justify-between gap-4 sm:items-center">
@@ -42,10 +43,10 @@ const Home = async ({ searchParams }: SearchParams) => {
           placeholder="Search questions..."
           otherClasses="flex-1"
         />
-        <CommonFilter 
-          filters= {HomePageFilters}
+        <CommonFilter
+          filters={HomePageFilters}
           otherClasses="min-h-[56px] sm:min-w-[170px]"
-          containerClasses = "hidden max-md:flex"
+          containerClasses="hidden max-md:flex"
         />
       </section>
       <HomeFilter />
@@ -60,6 +61,7 @@ const Home = async ({ searchParams }: SearchParams) => {
           ))
         }
       />
+      <Pagination page={page} isNext={isNext || false} />
     </>
   );
 };

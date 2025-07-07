@@ -105,7 +105,7 @@ export async function getAnswers(params: GetAnswersParams): Promise<
       .sort(sortCriteria)
       .skip(skip)
       .limit(limit);
-    const isNext = totalAnswer > skip * answers.length;
+    const isNext = totalAnswer > skip + answers.length;
     return {
       success: true,
       data: {

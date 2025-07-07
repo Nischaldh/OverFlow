@@ -1,6 +1,7 @@
 import QuestionCard from "@/components/cards/QuestionCard";
 import DataRenderer from "@/components/DataRenderer";
 import CommonFilter from "@/components/filters/CommonFilter";
+import Pagination from "@/components/Pagination";
 import LocalSearch from "@/components/search/LocalSearch";
 import { HomePageFilters, TagFilters } from "@/constants/filters";
 import ROUTES from "@/constants/routes";
@@ -19,7 +20,7 @@ const page = async ({ params, searchParams }: RouteParams) => {
     query,
     filter,
   });
-  const { tag, questions } = data || {};
+  const { tag, questions , isNext} = data || {};
   return (
     <>
       <section className="w-full flex flex-col-reverse sm:flex-row justify-between gap-4 sm:items-center">
@@ -45,6 +46,7 @@ const page = async ({ params, searchParams }: RouteParams) => {
           ))
         }
       />
+      <Pagination page={page} isNext={isNext || false} />
     </>
   );
 };
