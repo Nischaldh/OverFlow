@@ -82,7 +82,7 @@ export const getTagQuestions = async (
       data: undefined,
     };
   }
-  const { page = 1, pageSize = 10, query, tagId } = params;
+  const { page = 1, pageSize = 10, query, tagId, filter } = params;
   const skip = (Number(page) - 1) * pageSize;
   const limit = Number(pageSize);
 
@@ -95,6 +95,24 @@ export const getTagQuestions = async (
     if (query) {
       filterQuery.title = [{ $regex: query, $options: "i" }];
     }
+    let sortCriteria = {};
+    switch (filter) {
+      case "a-z":
+        sortCriteria = { title: 1 };
+        break;
+      case "popular":
+        sortCriteria = { upvotes: -1 };
+        break;
+      case "oldest":
+        sortCriteria = { createdAt: 1 };
+        break;
+      case "recent":
+        sortCriteria = { createdAt: -1 };
+        break;
+      default:
+        sortCriteria = { createdAt: -1 };
+        break;
+    }
     const totalQuestions = await Question.countDocuments(filterQuery);
     const questions = await Question.find(filterQuery)
       .select("_id title views answers upvotes downvotes author createdAt")
@@ -102,6 +120,7 @@ export const getTagQuestions = async (
         { path: "author", select: "name image" },
         { path: "tags", select: "name" },
       ])
+      .sort(sortCriteria)
       .skip(skip)
       .limit(limit);
     const isNext = totalQuestions > skip + questions.length;

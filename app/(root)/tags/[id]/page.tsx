@@ -2,7 +2,7 @@ import QuestionCard from "@/components/cards/QuestionCard";
 import DataRenderer from "@/components/DataRenderer";
 import CommonFilter from "@/components/filters/CommonFilter";
 import LocalSearch from "@/components/search/LocalSearch";
-import { TagFilters } from "@/constants/filters";
+import { HomePageFilters, TagFilters } from "@/constants/filters";
 import ROUTES from "@/constants/routes";
 import { EMPTY_QUESTION } from "@/constants/states";
 import { getTagQuestions } from "@/lib/actions/tag.action";
@@ -11,12 +11,13 @@ import React from "react";
 
 const page = async ({ params, searchParams }: RouteParams) => {
   const { id } = await params;
-  const { page, pageSize, query } = await searchParams;
+  const { page, pageSize, query,filter } = await searchParams;
   const { success, data, error } = await getTagQuestions({
     tagId: id,
     page: Number(page) || 1,
     pageSize: Number(pageSize) || 10,
     query,
+    filter,
   });
   const { tag, questions } = data || {};
   return (
@@ -31,6 +32,7 @@ const page = async ({ params, searchParams }: RouteParams) => {
           placeholder="Search questions..."
           otherClasses="flex-1"
         />
+        <CommonFilter filters={TagFilters} otherClasses="min-h-[56px] sm:min-w-[170px]" />
       </div>
       <DataRenderer
         success={success}
