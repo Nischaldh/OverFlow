@@ -123,7 +123,7 @@ export async function getUserQuestions(params: GetUserQuestionsParams): Promise<
     const questions = await Question.find({ author: userId })
       .populate("tags", "name")
       .populate("author", "name image")
-      .sort({ createdAt: -1 })
+      .sort({ views: -1 })
       .skip(skip)
       .limit(limit);
     const isNext = totalQuestions > skip + questions.length;
@@ -131,6 +131,45 @@ export async function getUserQuestions(params: GetUserQuestionsParams): Promise<
       success: true,
       data: {
         questions: JSON.parse(JSON.stringify(questions)),
+        isNext,
+      },
+    };
+  } catch (error) {
+    return { ...(handleError(error) as ErrorResponse), data: undefined };
+  }
+}
+
+export async function getUserAnswers(params: GetUserAnswersParams): Promise<
+  ActionResponse<{
+    answers: Answer[];
+    isNext: boolean;
+  }>
+> {
+  const validationResult = await action({
+    params,
+    schema: GetUserSchema,
+  });
+  if (validationResult instanceof Error) {
+    return {
+      ...(handleError(validationResult) as ErrorResponse),
+      data: undefined,
+    };
+  }
+  const { userId, page = 1, pageSize = 10 } = params;
+  const skip = (Number(page) - 1) * pageSize;
+  const limit = pageSize;
+  try {
+    const totalAnswers = await Answer.countDocuments({ author: userId });
+    const answers = await Answer.find({ author: userId })
+      .populate("author", "_id name image")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+    const isNext = totalAnswers > skip + answers.length;
+    return {
+      success: true,
+      data: {
+        answers: JSON.parse(JSON.stringify(answers)),
         isNext,
       },
     };
