@@ -29,7 +29,7 @@ interface GetQuestionParams {
   questionId: string;
 }
 
-interface GetTagQuestionsParams extends PaginatedSearchParams{
+interface GetTagQuestionsParams extends PaginatedSearchParams {
   tagId: string;
 }
 
@@ -62,10 +62,15 @@ interface HasVotedResponse {
   hasDownvoted: boolean;
 }
 
-interface CollectionBaseParams{
+interface CollectionBaseParams {
   questionId: string;
 }
 
-interface GetUserParams{
+interface  GetUserParams {
+  userId: string;
+}
+
+interface GetUserQuestionsParams
+  extends Omit<PaginatedSearchParams, "query" | "filter" | "sort"> {
   userId: string; 
 }
