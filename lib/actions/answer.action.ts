@@ -1,6 +1,6 @@
 "use server";
 
-import  { IAnswerDoc } from "@/database/answer.model";
+import { IAnswerDoc } from "@/database/answer.model";
 import action from "../handlers/actions";
 import {
   AnswerServerSchema,
@@ -9,13 +9,17 @@ import {
 } from "../validations";
 import handleError from "../handlers/error";
 import mongoose from "mongoose";
-import { Question, Vote , Answer} from "@/database";
-import {
-  NotFoundError,
-  UnauthorizedError, 
-} from "../http-errors";
+import { Question, Vote, Answer } from "@/database";
+import { NotFoundError, UnauthorizedError } from "../http-errors";
 import { revalidatePath } from "next/cache";
 import ROUTES from "@/constants/routes";
+import {
+  CreateAnswerParams,
+  GetAnswersParams,
+  DeleteAnswerParams,
+} from "@/types/action";
+import { after } from "next/server";
+import { createInteraction } from "./interaction.action";
 
 export async function createAnswer(
   params: CreateAnswerParams
@@ -55,6 +59,14 @@ export async function createAnswer(
     }
     question.answers += 1;
     await question.save({ session });
+    after(async () => {
+      await createInteraction({
+        action: "post",
+        actionId: newAnswer._id.toString(),
+        actionTarget: "answer",
+        authorId: userId as string,
+      });
+    });
     await session.commitTransaction();
     revalidatePath(ROUTES.QUESTIONS(questionId));
     return { success: true, data: JSON.parse(JSON.stringify(newAnswer)) };

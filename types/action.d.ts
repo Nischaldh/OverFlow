@@ -1,3 +1,6 @@
+import { IInteraction, IInteractionDoc } from "@/database/interaction.model";
+import { mongo } from "mongoose";
+
 interface SignInWithOAuthParams {
   provider: "google" | "github";
   providerAccountId: string;
@@ -76,17 +79,39 @@ interface GetUserQuestionsParams
 }
 
 interface GetUserAnswersParams extends PaginatedSearchParams {
-  userId: string; 
+  userId: string;
 }
 
-interface GetUserTagsParams{
-  userId:string;
+interface GetUserTagsParams {
+  userId: string;
 }
 
-interface DeleteQuestionParams{
-  questionId:String
+interface DeleteQuestionParams {
+  questionId: String;
 }
 
-interface DeleteAnswerParams{
-  answerId: string; 
+interface DeleteAnswerParams {
+  answerId: string;
+}
+
+interface CreateInteractionParams {
+  action:
+    | "view"
+    | "upvote"
+    | "downvote"
+    | "bookmark"
+    | "post"
+    | "edit"
+    | "delete"
+    | "search";
+  actionId: string;
+  authorId: string;
+  actionTarget: "question" | "answer";
+}
+
+interface UpdateRepudationParams {
+  interaction: IInteractionDoc;
+  session: mongoose.ClientSession;
+  performerId: string;
+  authorId: string;
 }

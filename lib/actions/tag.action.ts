@@ -8,6 +8,7 @@ import {
 } from "../validations";
 import { Question, Tag } from "@/database";
 import dbConnect from "../mongoose";
+import { GetTagQuestionsParams } from "@/types/action";
 
 export const getTags = async (
   params: PaginatedSearchParams

@@ -5,11 +5,12 @@ import {
   getUser,
   getUserAnswers,
   getUserQuestions,
+  getUserStats,
   getUserTopTags,
 } from "@/lib/actions/user.action";
 import { notFound } from "next/navigation";
 import dayjs from "dayjs";
-import React from "react";
+import React, { use } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import Stats from "@/components/user/Stats";
@@ -37,7 +38,8 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
         <div className="h1-bold text-dark100_light900">{error?.message}</div>
       </div>
     );
-  const { user, totalQuestions, totalAnswers } = data!;
+  const { user } = data!;
+  const { data: userStats } = await getUserStats({ userId: id });
   const {
     success: userQuestionSuccess,
     data: userQuestions,
@@ -119,13 +121,10 @@ const Profile = async ({ params, searchParams }: RouteParams) => {
         </div>
       </section>
       <Stats
-        totalQuestions={totalQuestions}
-        totalAnswers={totalAnswers}
-        badges={{
-          GOLD: 0,
-          SILVER: 0,
-          BRONZE: 0,
-        }}
+        totalQuestions={userStats?.totalQuestions || 0}
+        totalAnswers={userStats?.totalAnswers || 0}
+        badges={userStats?.badges || { GOLD: 0, SILVER: 0, BRONZE: 0 }}
+        reputationPoints={user.reputation || 0}
       />
       <section className="mt-10 flex gap-10">
         <Tabs defaultValue="top-posts" className="flex-[2]">
