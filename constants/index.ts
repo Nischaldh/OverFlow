@@ -63,3 +63,13 @@ export const BADGE_CRITERIA = {
     GOLD: 200,
   },
 };
+
+export const Interaction_Weights = {
+  view: 1,
+  answer: 5,
+  upvote: 2,
+  downvote: -1,
+  bookmark: 3,
+  post: 10,
+  unbookmark: -3,
+};

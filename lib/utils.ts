@@ -86,3 +86,13 @@ export function assignBadges(params: {
 
   return badgeCounts;
 }
+
+export const RECOMMENDATION_ACTIONS = new Set([
+  "view",
+  "upvote",
+  "downvote",
+  "bookmark",
+  "unbookmark",
+  "post",
+  "answer",
+]);

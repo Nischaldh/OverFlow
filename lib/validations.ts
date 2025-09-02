@@ -1,3 +1,4 @@
+import { Interaction_Weights } from "@/constants";
 import { InteractionActionEnums } from "@/database/interaction.model";
 import { z } from "zod";
 
@@ -227,3 +228,10 @@ export const CreateInteractionSchema = z.object({
   authorId: z.string().min(1, { message: "Author ID is required." }),
 });
 
+export const updateUserInteractionSchema = z.object({
+  userId: z.string(),
+  questionId: z.string(),
+  tags: z.array(z.string()),
+  action: z.enum(Object.keys(Interaction_Weights) as [keyof typeof Interaction_Weights, ...string[]]),
+  session: z.any().optional(),
+});

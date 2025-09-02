@@ -2,14 +2,17 @@
 
 import Interaction, { IInteractionDoc } from "@/database/interaction.model";
 import action from "../handlers/actions";
-import { CreateInteractionSchema } from "../validations";
+import { CreateInteractionSchema, updateUserInteractionSchema } from "../validations";
 import handleError from "../handlers/error";
-import mongoose, { Mongoose } from "mongoose";
+import mongoose, { Mongoose, Types } from "mongoose";
 import {
   CreateInteractionParams,
   UpdateRepudationParams,
+  UpdateUserInteractionParams,
 } from "@/types/action";
-import { User } from "@/database";
+import { Answer, Question, User, UserInteraction } from "@/database";
+import { RECOMMENDATION_ACTIONS } from "../utils";
+import { Interaction_Weights } from "@/constants";
 
 export async function createInteraction(
   params: CreateInteractionParams
@@ -74,10 +77,47 @@ export async function createInteraction(
         performerId: userId!,
         authorId,
       });
+  if (["view", "upvote", "downvote", "bookmark", "unbookmark", "post", "answer"].includes(actionType)) {
+  let tags: string[] = [];
+  let answer: { question?: Types.ObjectId } | null = null;
+
+  if (actionTarget === "question") {
+    // Fetch question tags
+    const question = await Question.findById(actionId)
+      .select("tags")
+      .lean<{ tags: Types.ObjectId[] }>(); // Explicit type
+
+    tags = question?.tags.map(tag => tag.toString()) || [];
+
+  } else if (actionTarget === "answer") {
+    // Fetch the answer and then its question tags
+    answer = await Answer.findById(actionId)
+      .select("question")
+      .lean<{ question: Types.ObjectId }>(); // Explicit type
+
+    if (answer?.question) {
+      const question = await Question.findById(answer.question)
+        .select("tags")
+        .lean<{ tags: Types.ObjectId[] }>(); // Explicit type
+
+      tags = question?.tags.map(tag => tag.toString()) || [];
+    }
+  }
+
+  // Call updateUserInteraction with proper params
+  if (!userId) throw new Error("userId is required for updateUserInteraction");
+  await updateUserInteraction({
+    userId: userId,
+    questionId: actionTarget === "question" ? actionId : (answer?.question?.toString() || ""),
+    tags,
+    action: actionType,
+    session,
+  });
+}
 
       await session.commitTransaction();
       return { success: true, data: JSON.parse(JSON.stringify(interaction)) };
-    };
+    }
   } catch (error) {
     session.abortTransaction();
     return {
@@ -137,4 +177,52 @@ async function updateRepudation(params: UpdateRepudationParams) {
     ],
     { session }
   );
+}
+
+export async function updateUserInteraction(
+  params: UpdateUserInteractionParams
+) {
+  const { userId, questionId, tags, action: actionType, session } = params;
+  const validationResult = await action({
+    params,
+    schema : updateUserInteractionSchema,
+    authorize: false,
+  })
+  if (validationResult instanceof Error) {
+    return {
+      ...(handleError(validationResult) as ErrorResponse),
+      data: undefined,
+    };
+  }
+
+  if (!RECOMMENDATION_ACTIONS.has(actionType)) return;
+   if (!Object.prototype.hasOwnProperty.call(Interaction_Weights, actionType)) return;
+   const weight = Interaction_Weights[actionType as keyof typeof Interaction_Weights];
+   if (weight === undefined) return;
+
+
+  
+  let userInteraction = await UserInteraction.findOne({ user: userId });
+
+  if (!userInteraction) {
+    userInteraction = new UserInteraction({
+      user: userId,
+      questions: [],
+      tags: {},
+    });
+  }
+
+  
+  if (!userInteraction.questions.includes(questionId)) {
+    userInteraction.questions.push(questionId);
+  }
+
+ 
+ for (const tag of tags || []) {
+    if (!tag) continue;
+    const current = userInteraction.tags.get(tag) || 0;
+    userInteraction.tags.set(tag, current + weight);
+  }
+
+  await userInteraction.save({ session });
 }

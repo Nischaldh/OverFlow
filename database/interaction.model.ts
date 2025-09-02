@@ -5,6 +5,7 @@ export const InteractionActionEnums = [
   "upvote",
   "downvote",
   "bookmark",
+  "unbookmark",
   "post",
   "edit",
   "delete",

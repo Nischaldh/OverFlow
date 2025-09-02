@@ -1,3 +1,4 @@
+import { Interaction_Weights } from "@/constants";
 import { IInteraction, IInteractionDoc } from "@/database/interaction.model";
 import { mongo } from "mongoose";
 
@@ -114,4 +115,12 @@ interface UpdateRepudationParams {
   session: mongoose.ClientSession;
   performerId: string;
   authorId: string;
+}
+
+export interface UpdateUserInteractionParams {
+  userId: string;
+  questionId: string;
+  tags: string[];
+  action: keyof typeof Interaction_Weights | "edit" | "delete" | "search";
+  session?: any;  
 }
