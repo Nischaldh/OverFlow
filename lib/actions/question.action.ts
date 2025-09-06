@@ -28,6 +28,8 @@ import {
 } from "@/types/action";
 import { createInteraction } from "./interaction.action";
 import { after } from "next/server";
+import { auth } from "@/auth";
+import { recommendation_system } from "@/constants/recommendation";
 
 export async function createQuestion(
   params: CreateQuestionParams
@@ -273,8 +275,26 @@ export async function getQuestions(
   const skip = (Number(page) - 1) * pageSize;
   const limit = Number(pageSize);
   const filterQuery: FilterQuery<typeof Question> = {};
-  if (filter === "recommended")
-    return { success: true, data: { questions: [], isNext: false } };
+  if (filter === "recommended") {
+    // fetch the logged-in user from session
+    const session = await auth(); // returns { user?: { id: string } }
+    const userId = session?.user?.id;
+
+    if (!userId) {
+      // user not logged in, cannot recommend
+      return {
+        success: true,
+        data: { questions: [], isNext: false },
+      };
+    }
+
+    try {
+      const result = await recommendation_system({ userId, page, pageSize });
+      return result;
+    } catch (error) {
+      return { ...(handleError(error) as ErrorResponse), data: undefined };
+    }
+  }
   if (query) {
     filterQuery.$or = [
       { title: { $regex: new RegExp(query, "i") } },

@@ -4,8 +4,7 @@ import { AIAnswerSchema } from "@/lib/validations";
 import { groq } from "@ai-sdk/groq";
 import { generateText } from "ai";
 import { NextResponse } from "next/server";
-import { use } from "react";
-import { text } from "stream/consumers";
+
 
 export async function POST(req: Request) {
   const { question, content, userAnswer } = await req.json();
@@ -18,9 +17,14 @@ export async function POST(req: Request) {
       throw new ValidationError(validatedData.error.flatten().fieldErrors);
     }
     const { text } = await generateText({
-      model: groq("llama3-8b-8192"),
-      prompt: `Generate a markdown-formatted response to the following question: "${question}" Consider the provided context: **Context:** ${content} Also, prioritize and incorporate the user's answer when formulating your response: **User's Answer:** ${userAnswer} Prioritize the user's answer only if it's correct. If it's incomplete or incorrect, improve or correct it while keeping the response concise and to the point. Provide the final answer in markdown format.`,
-      system: `You are a helpful assistant that provides informative responses in markdown format. Use appropriate markdown syntax for headings, lists, code blocks, and emphasis where necessary. For code blocks, use short-form smaller case language identifiers (e.g., 'js' for JavaScript, 'py' for Python, 'ts' for TypeScript, 'html' for HTML, 'css' for CSS, etc.).`,
+      model: groq("meta-llama/llama-4-maverick-17b-128e-instruct"),
+      prompt: `Generate a markdown-formatted response to the following question: "${question}"
+              Consider the provided context: *Context:* ${content}
+              Also, prioritize and incorporate the user's answer when formulating your response: *User's Answer:* ${userAnswer}
+              Prioritize the user's answer only if it's correct. If it's incomplete or incorrect, improve or correct it while keeping the response concise and to the point.
+              *Important:* Always include a short language identifier for code blocks (like 'js', 'py', 'ts', 'html', 'css') and never leave it blank.
+              Provide the final answer in markdown format.`,
+      system: `You are a helpful assistant that provides informative responses in markdown format. Use appropriate markdown syntax for headings, lists, code blocks, and emphasis where necessary. For code blocks, always include a short-form language identifier (e.g., 'js', 'py', 'ts', 'html', 'css').`,
     });
     console.log("Generated AI answer:", text);
     return NextResponse.json({ success: true, data: text }, { status: 200 });

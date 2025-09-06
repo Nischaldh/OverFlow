@@ -10,7 +10,7 @@ import {
   UpdateRepudationParams,
   UpdateUserInteractionParams,
 } from "@/types/action";
-import { Answer, Question, User, UserInteraction } from "@/database";
+import { Answer, Question, User, UserInteraction, Tag } from "@/database";
 import { RECOMMENDATION_ACTIONS } from "../utils";
 import { Interaction_Weights } from "@/constants";
 
@@ -87,8 +87,11 @@ export async function createInteraction(
       .select("tags")
       .lean<{ tags: Types.ObjectId[] }>(); // Explicit type
 
-    tags = question?.tags.map(tag => tag.toString()) || [];
-
+    if (question?.tags?.length) {
+        // Fetch tag names
+        const tagDocs = await mongoose.model("Tag").find({ _id: { $in: question.tags } }).select("name").lean<{ name: string }[]>();
+        tags = tagDocs.map(tag => tag.name);
+      }
   } else if (actionTarget === "answer") {
     // Fetch the answer and then its question tags
     answer = await Answer.findById(actionId)
@@ -100,7 +103,10 @@ export async function createInteraction(
         .select("tags")
         .lean<{ tags: Types.ObjectId[] }>(); // Explicit type
 
-      tags = question?.tags.map(tag => tag.toString()) || [];
+       if (question?.tags?.length) {
+          const tagDocs = await mongoose.model("Tag").find({ _id: { $in: question.tags } }).select("name").lean<{ name: string }[]>();
+          tags = tagDocs.map(tag => tag.name);
+        }
     }
   }
 

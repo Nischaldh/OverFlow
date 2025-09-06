@@ -124,3 +124,24 @@ export interface UpdateUserInteractionParams {
   action: keyof typeof Interaction_Weights | "edit" | "delete" | "search";
   session?: any;  
 }
+
+interface RecommendationParams{
+  userId: string;
+  page?: number;
+  pageSize?: number;
+}
+
+interface CBFResult {
+  questionId: string;
+  score: number;
+}
+
+interface CFResult {
+  questionId: string;
+  score: number;
+}
+
+interface PopularityResult {
+  questionId: string;
+  score: number;
+}
