@@ -145,3 +145,7 @@ interface PopularityResult {
   questionId: string;
   score: number;
 }
+interface JobFilterParams{
+  query: string;
+  page:string;
+}

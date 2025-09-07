@@ -73,3 +73,16 @@ export const Interaction_Weights = {
   post: 10,
   unbookmark: -3,
 };
+
+export const countriesList: Country[] = [
+  { name: { common: "Nepal" } },
+  { name: { common: "India" } },
+  { name: { common: "United States" } },
+  { name: { common: "United Kingdom" } },
+  { name: { common: "Canada" } },
+  { name: { common: "Australia" } },
+  { name: { common: "Germany" } },
+  { name: { common: "France" } },
+  { name: { common: "Japan" } },
+  { name: { common: "China" } },
+];
