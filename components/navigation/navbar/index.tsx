@@ -5,12 +5,14 @@ import Theme from "./Theme";
 import MobileNavigation from "./MobileNavigation";
 import { auth } from "@/auth";
 import UserAvatar from "@/components/UserAvatar";
+import ROUTES from "@/constants/routes";
+import GlobalSearch from "@/components/search/GlobalSearch";
 
 const Navbar = async() => {
   const session = await auth();
   return (
     <nav className="flex-between background-light900_dark200 fixed z-50 w-full p-6 dark:shadow-none sm:px-12 gap-5">
-      <Link href="/" className="flex items-center gap-1">
+      <Link href={ROUTES.HOME} className="flex items-center gap-1">
         <Image
           src="/images/site-logo.svg"
           alt="DevFlow Logo"
@@ -21,7 +23,7 @@ const Navbar = async() => {
           Over<span className="text-primary-500">Flow</span>
         </p>
       </Link>
-      <p>Global Search</p>
+      <GlobalSearch />
       <div className="flex-between gap-5">
         <Theme />
         {session?.user?.id&&(
