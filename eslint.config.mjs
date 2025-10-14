@@ -23,5 +23,6 @@ export default [
     rules: {
       "no-undef": "off",
     },
+    ignorePatterns : ["components/ui/**"]
   },
 ];

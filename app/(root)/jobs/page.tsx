@@ -29,7 +29,7 @@ const page = ({ searchParams }: RouteParams) => {
       setLoading(true);
 
       try {
-        // Unique cache key for each query/location/page combo
+        
         const cacheKey = `cachedJobs_${query || "default"}_${location || "global"}_${parsedPage}`;
         const cached = localStorage.getItem(cacheKey);
 
@@ -37,7 +37,7 @@ const page = ({ searchParams }: RouteParams) => {
           const { data, timestamp } = JSON.parse(cached);
           const now = Date.now();
 
-          // ✅ 24-hour cache validity
+        
           if (now - timestamp < 24 * 60 * 60 * 1000) {
             setJobs(data);
             setLoading(false);
@@ -45,7 +45,6 @@ const page = ({ searchParams }: RouteParams) => {
           }
         }
 
-        // Otherwise fetch new jobs
         const userLocation = await fetchLocation();
 
         const fetchedJobs = await fetchJobs({
@@ -55,7 +54,6 @@ const page = ({ searchParams }: RouteParams) => {
 
         setJobs(fetchedJobs);
 
-        // Save with timestamp
         localStorage.setItem(
           cacheKey,
           JSON.stringify({
