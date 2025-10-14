@@ -75,6 +75,7 @@ export const Interaction_Weights = {
 };
 
 export const countriesList: Country[] = [
+  { name: { common: "All Locations" } },
   { name: { common: "Nepal" } },
   { name: { common: "India" } },
   { name: { common: "United States" } },
