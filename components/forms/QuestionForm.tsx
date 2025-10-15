@@ -199,7 +199,7 @@ const QuestionForm = ({ question, isEdit = false }: Params) => {
                 </div>
               </FormControl>
               <FormDescription className="body-regular mt-2.5 text-light-500">
-                Add up to 3 tags to describe what your question is about. You
+                Add up to 5 tags to describe what your question is about. You
                 need to press enter to add a tag.
               </FormDescription>
               <FormMessage />
