@@ -199,6 +199,7 @@ export async function recommendation_system(
     // Fetch full question data
     const questions = await Question.find({
       _id: { $in: paginated.map(p => p.questionId) },
+      author: { $ne: userId }, // Exclude user's own questions
     })
       .populate("tags", "name")
       .populate("author", "name image")
