@@ -168,10 +168,10 @@ export async function recommendation_system(
       ...popMap.keys(),
     ]);
 
-    // Weights
-    const wCBF = 0.5;
-    const wCF = 0.3;
-    const wPop = 0.2;
+  
+    const wCBF = 0.7;
+    const wCF = 0.2;
+    const wPop = 0.1;
 
     // Merge scores
     let finalScores: { questionId: string; score: number }[] = [];
