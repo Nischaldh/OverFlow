@@ -83,8 +83,8 @@ A major focus of the project was the recommendation engine. Instead of relying o
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/YOUR_REPO.git
-cd YOUR_REPO
+git clone https://github.com/Nischaldh/OverFlow.git
+cd OverFlow
 ```
 
 ### 2. Install dependencies
