@@ -2,6 +2,8 @@ import handleError from "@/lib/handlers/error";
 import { ValidationError } from "@/lib/http-errors";
 import { AIAnswerSchema } from "@/lib/validations";
 import { groq } from "@ai-sdk/groq";
+import { google } from "@ai-sdk/google";
+
 import { generateText } from "ai";
 import { NextResponse } from "next/server";
 
@@ -17,7 +19,7 @@ export async function POST(req: Request) {
       throw new ValidationError(validatedData.error.flatten().fieldErrors);
     }
     const { text } = await generateText({
-      model: groq("meta-llama/llama-4-maverick-17b-128e-instruct"),
+      model: google("gemini-3.1-flash-lite-preview",),
       prompt: `Generate a markdown-formatted response to the following question: "${question}"
               Consider the provided context: *Context:* ${content}
               Also, prioritize and incorporate the user's answer when formulating your response: *User's Answer:* ${userAnswer}
@@ -29,6 +31,7 @@ export async function POST(req: Request) {
     console.log("Generated AI answer:", text);
     return NextResponse.json({ success: true, data: text }, { status: 200 });
   } catch (error) {
+    console.error("AI route error:", error);
     return handleError(error, "api") as APIErrorResponse;
   }
 }
